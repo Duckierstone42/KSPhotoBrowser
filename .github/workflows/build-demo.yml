@@ -1,0 +1,58 @@
+name: Build KSPhotoBrowser Demo
+
+on:
+  push:
+    branches:
+      - main
+      - master
+  pull_request:
+  workflow_dispatch:
+
+jobs:
+  build-demo:
+    runs-on: macos-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Show Xcode version
+        run: xcodebuild -version
+
+      - name: Build KSPhotoBrowser Demo (iOS Simulator, Release)
+        run: |
+          set -e
+          xcodebuild \
+            -project Demo/KSPhotoBrowserDemo.xcodeproj \
+            -scheme KSPhotoBrowserDemo \
+            -sdk iphonesimulator \
+            -configuration Release \
+            -derivedDataPath build \
+            build
+
+      - name: Prepare Mach-O binary and app bundle artifacts
+        run: |
+          set -e
+          APP_PATH="build/Build/Products/Release-iphonesimulator/KSPhotoBrowserDemo.app"
+          if [ ! -d "$APP_PATH" ]; then
+            echo "App not found at $APP_PATH"
+            echo "Available build products:"
+            ls -R build/Build/Products || true
+            exit 1
+          fi
+
+          ARTIFACT_DIR="build/artifacts"
+          mkdir -p "$ARTIFACT_DIR"
+
+          # Copy the Mach-O executable out of the .app bundle
+          cp "$APP_PATH/KSPhotoBrowserDemo" "$ARTIFACT_DIR/KSPhotoBrowserDemo-iphonesimulator"
+
+          # Archive the entire .app bundle as a downloadable artifact as well
+          tar -czf "$ARTIFACT_DIR/KSPhotoBrowserDemo-Release-iphonesimulator.app.tgz" -C "$(dirname "$APP_PATH")" "$(basename "$APP_PATH")"
+
+      - name: Upload artifacts (Mach-O and app bundle)
+        uses: actions/upload-artifact@v4
+        with:
+          name: KSPhotoBrowserDemo-Release-iphonesimulator
+          path: build/artifacts
+
