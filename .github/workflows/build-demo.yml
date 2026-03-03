@@ -19,8 +19,8 @@ jobs:
       - name: Show Xcode version
         run: xcodebuild -version
 
-      - name: Clean stale Pods project
-        run: rm -rf Demo/Pods/Pods.xcodeproj
+      - name: Clean stale Pods
+        run: rm -rf Demo/Pods
 
       - name: Install CocoaPods
         run: pod install --repo-update
