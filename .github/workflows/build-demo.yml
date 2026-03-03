@@ -19,16 +19,21 @@ jobs:
       - name: Show Xcode version
         run: xcodebuild -version
 
+      - name: Install CocoaPods
+        run: pod install
+        working-directory: Demo
+
       - name: Build KSPhotoBrowser Demo (iOS Simulator, Release)
         run: |
           set -e
           xcodebuild \
-            -project Demo/KSPhotoBrowserDemo.xcodeproj \
+            -workspace Demo/KSPhotoBrowserDemo.xcworkspace \
             -scheme KSPhotoBrowserDemo \
             -sdk iphonesimulator \
             -configuration Release \
             -derivedDataPath build \
             IPHONEOS_DEPLOYMENT_TARGET=15.0 \
+            CODE_SIGNING_ALLOWED=NO \
             build
 
       - name: Prepare Mach-O binary and app bundle artifacts
