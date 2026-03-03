@@ -28,6 +28,7 @@ jobs:
             -sdk iphonesimulator \
             -configuration Release \
             -derivedDataPath build \
+            IPHONEOS_DEPLOYMENT_TARGET=15.0 \
             build
 
       - name: Prepare Mach-O binary and app bundle artifacts
