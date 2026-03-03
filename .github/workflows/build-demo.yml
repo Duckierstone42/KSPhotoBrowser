@@ -19,8 +19,11 @@ jobs:
       - name: Show Xcode version
         run: xcodebuild -version
 
+      - name: Clean stale Pods project
+        run: rm -rf Demo/Pods/Pods.xcodeproj
+
       - name: Install CocoaPods
-        run: pod install
+        run: pod install --repo-update
         working-directory: Demo
 
       - name: Build KSPhotoBrowser Demo (iOS Simulator, Release)
@@ -29,7 +32,7 @@ jobs:
           xcodebuild \
             -workspace Demo/KSPhotoBrowserDemo.xcworkspace \
             -scheme KSPhotoBrowserDemo \
-            -sdk iphonesimulator \
+            -destination 'generic/platform=iOS Simulator' \
             -configuration Release \
             -derivedDataPath build \
             IPHONEOS_DEPLOYMENT_TARGET=15.0 \
